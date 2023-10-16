@@ -11,8 +11,8 @@ public class TcpConnection {
     //connexion + creation flux
     public TcpConnection(String host, int port) throws IOException {
         socket= new Socket(host, port);
-        dos = new DataOutputStream(socket.getOutputStream());
-        dis = new DataInputStream(socket.getInputStream());
+        dos = new DataOutputStream(new DataOutputStream(socket.getOutputStream()));
+        dis = new DataInputStream(new DataInputStream(socket.getInputStream()));
     }
 
     //Recois reponse du serveur

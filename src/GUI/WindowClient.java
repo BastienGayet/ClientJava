@@ -2,7 +2,9 @@ package GUI;
 import Tcp.TcpConnection;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class WindowClient extends JFrame {
     private JPanel contentPane;
@@ -26,21 +28,94 @@ public class WindowClient extends JFrame {
     private JButton vidéeLePanierButton;
     private JButton confirmérAchatButton;
     private JLabel Image;
+    private JTextField textFieldTotal;
     private JButton buttonOK;
     private JButton buttonCancel;
 
+    private int idClient;
+    private int idArticleEnCours;
+    private TcpConnection serveurConnexion;
+
     public WindowClient() {
+
+
         setContentPane(contentPane);
         setTitle("Le Maraicher en ligne  ");
-       // setIconImage(new ImageIcon(this.getClass().getResource("Gui/Images/icon.jpg")).getImage());// ajout icon a l'app
+       // setIconImage(new ImageIcon(this.getClass().getResource("GUI/Images/ail.jpg")).getImage());// ajout icon a l'app
         setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));// implemente fonction fenetre
         // Centrer la fenêtre
         setLocationRelativeTo(null);
         pack();
+        DefaultTableModel model = (DefaultTableModel) Panier.getModel(); // Récupérez le modèle de la JTable
 
+        model.setColumnIdentifiers(new String[]{"Articles","Prix à l'unité","Quantité"});
+        Panier.setModel(model);
+        textFieldTotal.setText("0.00");
+
+        /******CONNEXION SERVEUR******/
+
+      /*  try {
+            serveurConnexion = new TcpConnection("192.168.226.128",50000);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/
+
+
+        /****************FERMERFENETRE*******************/
+
+        addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+
+                try {
+                    serveurConnexion.Close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                dispose();
+            }
+
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+
+        });
+
+        /************************************************/
+
+        /****************CLIQUEBOUTON*******************/
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                loginok();
 
             }
         });
@@ -48,6 +123,12 @@ public class WindowClient extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                try {
+                    serveurConnexion.Close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                logoutok();
             }
         });
         buttonPrevious.addActionListener(new ActionListener() {
@@ -86,6 +167,9 @@ public class WindowClient extends JFrame {
 
             }
         });
+
+        /************************************************/
+
     }
 
     public void loginok(){
@@ -103,7 +187,6 @@ public class WindowClient extends JFrame {
         acheterButton.setEnabled(true);
 
         //Panier
-
         supprimerArticleButton.setEnabled(true);
         vidéeLePanierButton.setEnabled(true);
         confirmérAchatButton.setEnabled(true);
@@ -133,6 +216,12 @@ public class WindowClient extends JFrame {
 
     }
 
+    public void videeCaddie()
+    {
+
+
+    }
+
 
 
     public static void main(String[] args) {
@@ -141,4 +230,6 @@ public class WindowClient extends JFrame {
         dialog.setVisible(true);
         //System.exit(0);
     }
+
+
 }
