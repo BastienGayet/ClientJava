@@ -3,6 +3,7 @@ import Tcp.TcpConnection;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -36,7 +37,7 @@ public class WindowClient extends JFrame {
     private final TcpConnection serverConnection;
     private int articleEnCours;
     private int nbArticlePanier;
-    private String nomclient;
+    private int idClient;
     public WindowClient() {
 
         articleEnCours = 1;
@@ -45,22 +46,19 @@ public class WindowClient extends JFrame {
 
         setContentPane(contentPane);
         setTitle("Le Maraicher en ligne  ");
-       // setIconImage(new ImageIcon(this.getClass().getResource("GUI/Images/ail.jpg")).getImage());// ajout icon a l'app
+
         setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));// implemente fonction fenetre
         // Centrer la fenêtre
-        setLocationRelativeTo(null);
         pack();
-        setSize(750,600); // le pack() etire fort la table donc on fixe la taille pour que se soit plus jolie
+        setLocationRelativeTo(null);
 
+        JpanelPanier.setPreferredSize(new Dimension(tablePanier.getPreferredSize().width, 150));
         // changer les proprietes de la JTable
         tablePanier.setDefaultEditor(Object.class, null);
         tablePanier.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablePanier.setRowSelectionAllowed(true);
         tablePanier.setColumnSelectionAllowed(false);
 
-        /*DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new String[]{"Article", "Prix à l'unité", "Quantité"});
-        tablePanier.setModel(model);*/
         textFieldTotal.setText("0.00");
 
         logoutok();
@@ -68,7 +66,7 @@ public class WindowClient extends JFrame {
         /******CONNEXION SERVEUR******/
 
         try {
-            serverConnection = new TcpConnection("192.168.157.128", 50000);
+            serverConnection = new TcpConnection("192.168.226.128", 50000);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -131,7 +129,6 @@ public class WindowClient extends JFrame {
                     OVESP_Consult(articleEnCours);
 
                 loginok();
-                nomclient = textFieldNom.getText();
 
             }
         });
@@ -141,7 +138,10 @@ public class WindowClient extends JFrame {
                 OVESP_CancelAll();
                 viderCaddie();
                 articleEnCours = 1;
-                OVESP_Consult(articleEnCours);
+                textFieldArticle.setText("");
+                textFieldStock.setText("");
+                textFieldPrixunit.setText("");
+                Image.setIcon(new ImageIcon("src/GUI/Images/missing.jpg"));
                 logoutok();
             }
         });
@@ -316,7 +316,8 @@ public class WindowClient extends JFrame {
         System.out.println("DEBUG : " + champs[1]);
 
         if (champs[1].equals("OK")){
-            JOptionPane.showMessageDialog(null, champs[2], "Connection réussie !", JOptionPane.INFORMATION_MESSAGE);
+            idClient = Integer.parseInt(champs[2]);
+            JOptionPane.showMessageDialog(null, champs[3], "Connection réussie !", JOptionPane.INFORMATION_MESSAGE);
             loginok();
             return true;
         }
@@ -491,7 +492,7 @@ public class WindowClient extends JFrame {
         prixt = prixt.replace(',', '.');
         float prixtotal = Float.parseFloat(prixt);
 
-        data = "CONFIRMER#"+ nomclient + "#" + prixtotal + "#" + nbArticlePanier;
+        data = "CONFIRMER#"+ idClient + "#" + prixtotal + "#" + nbArticlePanier;
         try {
             serverConnection.Send(data);
         } catch (IOException e) {
@@ -521,6 +522,9 @@ public class WindowClient extends JFrame {
         WindowClient dialog = new WindowClient();
         dialog.pack();
         dialog.setVisible(true);
+        // FlatLightLaf.setup();
+       // FlatDarkLaf.setup();
+
         //System.exit(0);
     }
 
